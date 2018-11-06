@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">WifiLogger ver: 0.0.1</string>
+    <string name="title_activity_main">MainActivity</string>
+</resources>
