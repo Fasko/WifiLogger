@@ -1,0 +1,1 @@
+# Developing an Android application which is able to fetch Wireless Information and display it on a user's screen. The goal for this application is eventually to create an easy to use "logging" system, which will be capable of storing access point data in a text file to aid in collecting data for WiFI Fingerprinting.
