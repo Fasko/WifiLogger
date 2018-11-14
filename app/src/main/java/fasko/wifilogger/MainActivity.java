@@ -1,6 +1,5 @@
 package fasko.wifilogger;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,13 +17,11 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MainActivity extends AppCompatActivity{
 
     private WifiManager wifiManager;
     private ListView listView;
     private Button buttonScan;
-    private int size = 0;
     private List<ScanResult> results;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayAdapter adapter;
@@ -68,10 +65,9 @@ public class MainActivity extends AppCompatActivity{
             unregisterReceiver(this);
 
             for (ScanResult scanResult : results) {
-                arrayList.add("SSID " +scanResult.SSID +" BSSID: " +scanResult.BSSID + " dB: " + scanResult.level);
+                arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);
                 adapter.notifyDataSetChanged();
             }
-            arrayList.add("Time when Executed: " +java.time.LocalTime.now());
         }
     };
 }
