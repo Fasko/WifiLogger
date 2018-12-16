@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +42,10 @@ public class MainActivity extends AppCompatActivity{
         listView = findViewById(R.id.wifiList);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        if (!wifiManager.isWifiEnabled()) {
-            Toast.makeText(this, "WiFi is disabled ... enabling now", Toast.LENGTH_LONG).show();
-            wifiManager.setWifiEnabled(true);
-        }
+        //if (!wifiManager.isWifiEnabled()) {
+         //   Toast.makeText(this, "WiFi is disabled ... enabling now", Toast.LENGTH_LONG).show();
+         //   wifiManager.setWifiEnabled(true);
+        //}
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);
@@ -64,8 +65,9 @@ public class MainActivity extends AppCompatActivity{
             results = wifiManager.getScanResults();
             unregisterReceiver(this);
 
-            for (ScanResult scanResult : results) {
-                arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);
+            for (ScanResult scanResult : results){
+                if (scanResult.SSID.equals("4csuuseonly"))
+                    arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);
                 adapter.notifyDataSetChanged();
             }
         }
