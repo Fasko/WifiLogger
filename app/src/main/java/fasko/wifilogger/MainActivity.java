@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +49,10 @@ public class MainActivity extends AppCompatActivity{
         listView.setAdapter(adapter);
         scanWifi();
     }
+    public void goToLogging(View view){
+        Intent startNewActivity = new Intent(this,Logging.class);
+        startActivity(startNewActivity);
+    }
 
     private void scanWifi() {
         arrayList.clear();
@@ -64,7 +66,6 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             results = wifiManager.getScanResults();
             unregisterReceiver(this);
-
             for (ScanResult scanResult : results){
                 if (scanResult.SSID.equals("4csuuseonly"))
                     arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);

@@ -16,7 +16,7 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/gotoLogging"
+            android:id="@+id/goToLoggingBtn"
             android:layout_width="120dp"
             android:layout_height="40dp"
             android:layout_alignParentEnd="true"
@@ -25,7 +25,10 @@
             android:layout_marginEnd="10dp"
             android:layout_toEndOf="@+id/scanBtn"
             android:background="@color/colorPrimaryDark"
-            android:text="Logging Mode" />
+            android:text="Logging Mode"
+            android:onClick="goToLogging"
+            />
+
 
         <Button
             android:id="@+id/scanBtn"
