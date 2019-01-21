@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         buttonScan = findViewById(R.id.scanBtn);
         buttonScan.setOnClickListener(new View.OnClickListener() {
-            @Override
             public void onClick(View view) {
+                listView.setEnabled(false);
                 scanWifi();
             }
         });
@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity{
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);
-        scanWifi();
     }
     public void goToLogging(View view){
         Intent startNewActivity = new Intent(this,Logging.class);
@@ -69,8 +68,9 @@ public class MainActivity extends AppCompatActivity{
             for (ScanResult scanResult : results){
                 if (scanResult.SSID.equals("4csuuseonly"))
                     arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);
-                adapter.notifyDataSetChanged();
             }
+            adapter.notifyDataSetChanged();
+            listView.setEnabled(true);
         }
     };
 }

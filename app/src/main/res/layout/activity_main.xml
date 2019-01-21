@@ -11,6 +11,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.97" />
 
+
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
@@ -37,7 +38,7 @@
             android:layout_gravity="bottom"
             android:layout_margin="10dp"
             android:background="@color/colorPrimaryDark"
-            android:text="Scan Access Points" />
+            android:text="Scan Access Points" ></Button>
 
     </RelativeLayout>
 
