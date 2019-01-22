@@ -6,7 +6,7 @@ android {
         applicationId "fasko.wifilogger"
         minSdkVersion 22
         // Use SDK version 22 so you don't have to manage permissions, if publish, then will have to
-        targetSdkVersion 26
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
