@@ -27,6 +27,7 @@
             android:layout_toEndOf="@+id/scanBtn"
             android:background="@color/colorPrimaryDark"
             android:text="Logging Mode"
+            android:textColor="#FFFFFF"
             android:onClick="goToLogging"
             />
 
@@ -38,7 +39,9 @@
             android:layout_gravity="bottom"
             android:layout_margin="10dp"
             android:background="@color/colorPrimaryDark"
-            android:text="Scan Access Points" ></Button>
+            android:text="Scan Access Points"
+            android:textColor="#FFFFFF"
+            ></Button>
 
     </RelativeLayout>
 
