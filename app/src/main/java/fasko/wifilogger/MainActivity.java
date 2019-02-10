@@ -13,10 +13,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
     private ListView listView;
@@ -41,15 +42,16 @@ public class MainActivity extends AppCompatActivity{
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         //if (!wifiManager.isWifiEnabled()) {
-         //   Toast.makeText(this, "WiFi is disabled ... enabling now", Toast.LENGTH_LONG).show();
-         //   wifiManager.setWifiEnabled(true);
+        //   Toast.makeText(this, "WiFi is disabled ... enabling now", Toast.LENGTH_LONG).show();
+        //   wifiManager.setWifiEnabled(true);
         //}
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);
     }
-    public void goToLogging(View view){
-        Intent startNewActivity = new Intent(this,Logging.class);
+
+    public void goToLogging(View view) {
+        Intent startNewActivity = new Intent(this, LoggingActivity.class);
         startActivity(startNewActivity);
     }
 
@@ -65,9 +67,9 @@ public class MainActivity extends AppCompatActivity{
         public void onReceive(Context context, Intent intent) {
             results = wifiManager.getScanResults();
             unregisterReceiver(this);
-            for (ScanResult scanResult : results){
+            for (ScanResult scanResult : results) {
                 if (scanResult.SSID.equals("4csuuseonly"))
-                    arrayList.add("SSID: " +scanResult.SSID +"\nBSSID: " +scanResult.BSSID + "\ndB: " + scanResult.level);
+                    arrayList.add("SSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level);
             }
             adapter.notifyDataSetChanged();
             listView.setEnabled(true);
