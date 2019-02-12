@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -21,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
     private ListView listView;
-    private Button buttonScan;
     private List<ScanResult> results;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayAdapter adapter;
@@ -30,13 +28,6 @@ public class MainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        buttonScan = findViewById(R.id.scanBtn);
-        buttonScan.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                listView.setEnabled(false);
-                scanWifi();
-            }
-        });
 
         listView = findViewById(R.id.wifiList);
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -49,13 +40,12 @@ public class MainActivity extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
         listView.setAdapter(adapter);
     }
-
-    public void goToLogging(View view) {
-        Intent startNewActivity = new Intent(this, LoggingActivity.class);
-        startActivity(startNewActivity);
+    public void doScanProcess(View view) {
+        listView.setEnabled(false);
+        scanWifi();
     }
 
-    private void scanWifi() {
+    public void scanWifi() {
         arrayList.clear();
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan();
@@ -75,4 +65,9 @@ public class MainActivity extends AppCompatActivity {
             listView.setEnabled(true);
         }
     };
+
+    public void goToLogging(View view) {
+        Intent startNewActivity = new Intent(this, LoggingActivity.class);
+        startActivity(startNewActivity);
+    }
 }

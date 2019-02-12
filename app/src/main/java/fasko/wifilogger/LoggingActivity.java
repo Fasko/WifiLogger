@@ -6,40 +6,47 @@ import android.view.View;
 import android.widget.EditText;
 import android.os.Environment;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class LoggingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logging);
-
-        //Create WiFi Log directory if not created
-        //Internal Storage > Android > Data > fasko.wifilogger > files > Documents > WiFi_Logs
-        File file = new File(getApplicationContext().getExternalFilesDir(
-                Environment.DIRECTORY_DOCUMENTS), "WiFi_Logs");
-        if (!file.mkdirs()) {
-            System.out.println("Directory not created");
-        }
     }
-    //todo implementation of entering coordinates/filename and information logging.
 
     //Fetch logging details, scan, write to file
+    //Internal Storage > Android > Data > fasko.wifilogger > files > Documents
     public void onClick(View view) {
-        EditText scanCount = findViewById(R.id.ScanCountField);
-        String v1 = scanCount.getText().toString();
+        //todo Validate inputs (must enter scan count AND (XYZ || Training/Testing Point))
+
+        EditText scanCountET = findViewById(R.id.ScanCountField);
+        int scanCount = Integer.parseInt(scanCountET.getText().toString());
 
         EditText xCoord = findViewById(R.id.XCoordField);
-        String v2 = xCoord.getText().toString();
-
         EditText yCoord = findViewById(R.id.YCoordField);
-        String v3 = yCoord.getText().toString();
-
         EditText zCoord = findViewById(R.id.ZCoordField);
-        String v4 = zCoord.getText().toString();
 
-        EditText testOrTraining = findViewById(R.id.pointDataField);
-        String v5 = testOrTraining.getText().toString();
+        String XYZ = xCoord.getText().toString() + "," +yCoord.getText().toString()
+                + "," +zCoord.getText().toString();
 
-        System.out.println(v1 + " " + v2 + " " + v3 + " " + v4 + " " + v5);
+        EditText testOrTrainingET = findViewById(R.id.pointDataField);
+        String testOrTraining = testOrTrainingET.getText().toString();
+
+        DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        String timestamp = dateFormat.format(new Date(System.currentTimeMillis()));
+
+        //todo Write the basic information to top of file, write wifi information
+        File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+        File file = new File(dir,"exampleFile.txt");
+        try (FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.append(XYZ + " | " + timestamp);
+        }catch (IOException e){
+            //handle exception
+        }
     }
 }

@@ -38,10 +38,11 @@
             android:layout_height="40dp"
             android:layout_gravity="bottom"
             android:layout_margin="10dp"
+            android:onClick="doScanProcess"
             android:background="@color/colorPrimaryDark"
             android:text="Scan Access Points"
             android:textColor="#FFFFFF"
-            ></Button>
+            />
 
     </RelativeLayout>
 
