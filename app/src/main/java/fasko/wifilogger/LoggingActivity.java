@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.os.Environment;
+import android.widget.Toast;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -22,29 +23,70 @@ public class LoggingActivity extends AppCompatActivity {
     //Fetch logging details, scan, write to file
     //Internal Storage > Android > Data > fasko.wifilogger > files > Documents
     public void onClick(View view) {
-        //todo Validate inputs (must enter scan count AND (XYZ || Training/Testing Point))
-
         EditText scanCountET = findViewById(R.id.ScanCountField);
-        int scanCount = Integer.parseInt(scanCountET.getText().toString());
+        int scanCount =  + Integer.parseInt(0 + scanCountET.getText().toString()); //Avoid string format issue when empty
 
-        EditText xCoord = findViewById(R.id.XCoordField);
-        EditText yCoord = findViewById(R.id.YCoordField);
-        EditText zCoord = findViewById(R.id.ZCoordField);
 
-        String XYZ = xCoord.getText().toString() + "," +yCoord.getText().toString()
-                + "," +zCoord.getText().toString();
+        if (scanCount <= 0){
+            Toast.makeText(this, "Scan Count must be greater than 0", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        EditText xCoordET = findViewById(R.id.XCoordField);
+        EditText yCoordET = findViewById(R.id.YCoordField);
+        EditText zCoordET = findViewById(R.id.ZCoordField);
+        String xCoord = xCoordET.getText().toString();
+        String yCoord = yCoordET.getText().toString();
+        String zCoord = zCoordET.getText().toString();
         EditText testOrTrainingET = findViewById(R.id.pointDataField);
         String testOrTraining = testOrTrainingET.getText().toString();
+
+        // Enforces all or nothing XYZ rule
+        int inputCounter = 0;
+        if (!xCoord.isEmpty()){
+            inputCounter++;
+        }
+        if (!yCoord.isEmpty()){
+            inputCounter++;
+        }
+        if (!zCoord.isEmpty()) {
+            inputCounter++;
+        }
+
+        if (inputCounter == 1 || inputCounter == 2){
+            Toast.makeText(this,"Must enter all XYZ coordinates if using XYZ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //xyzFlag is true when all inputs is input
+        //testOrTrainingFlag is true when training or testing data is input
+        boolean testOrTrainingFlag = !(testOrTraining.isEmpty());
+        boolean xyzFlag = !(xCoord.isEmpty() || yCoord.isEmpty() || zCoord.isEmpty());
+
+        //Checks if there is no input
+        if (!testOrTrainingFlag && !xyzFlag){
+            Toast.makeText(this,"Must enter XYZ or Test/Training Data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //Build location-based input
+        String locationDataString = null;
+        if (xyzFlag && testOrTrainingFlag){
+            locationDataString = xCoord + "," +yCoord + "," +zCoord + " | " + testOrTraining;
+        } else if (xyzFlag){
+            locationDataString = xCoord + "," +yCoord + "," +zCoord;
+        } else if (testOrTrainingFlag){
+            locationDataString = testOrTraining;
+        }
 
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date(System.currentTimeMillis()));
 
-        //todo Write the basic information to top of file, write wifi information
+        //todo write wifi information
         File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
         File file = new File(dir,"exampleFile.txt");
         try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.append(XYZ + " | " + timestamp);
+            fileWriter.append(locationDataString + " | " + timestamp + " | " +scanCount);
         }catch (IOException e){
             //handle exception
         }
