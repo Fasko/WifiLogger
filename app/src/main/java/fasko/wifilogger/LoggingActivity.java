@@ -1,5 +1,11 @@
 package fasko.wifilogger;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.wifi.ScanResult;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -12,21 +18,46 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 public class LoggingActivity extends AppCompatActivity {
+    private WifiManager wifiManager;
+    private List<ScanResult> results;
+    static String fileHeader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logging);
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
+
+    //todo Implement multiple scans, come up with better file naming convention
+    BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            results = wifiManager.getScanResults();
+            unregisterReceiver(this);
+            File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+            File file = new File(dir,"exampleFile" +fileHeader +".txt");
+            try (FileWriter fileWriter = new FileWriter(file)) {
+                fileWriter.append(fileHeader);
+
+                for (ScanResult scanResult : results) {
+                    if (scanResult.SSID.equals("4csuuseonly"))
+                        fileWriter.append("\nSSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level);
+                }
+            }catch (IOException e){
+            //handle exception
+            }
+        }
+    };
 
     //Fetch logging details, scan, write to file
     //Internal Storage > Android > Data > fasko.wifilogger > files > Documents
     public void onClick(View view) {
         EditText scanCountET = findViewById(R.id.ScanCountField);
         int scanCount =  + Integer.parseInt(0 + scanCountET.getText().toString()); //Avoid string format issue when empty
-
-
         if (scanCount <= 0){
             Toast.makeText(this, "Scan Count must be greater than 0", Toast.LENGTH_SHORT).show();
             return;
@@ -78,17 +109,15 @@ public class LoggingActivity extends AppCompatActivity {
         } else if (testOrTrainingFlag){
             locationDataString = testOrTraining;
         }
-
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date(System.currentTimeMillis()));
+        fileHeader = (locationDataString + " | " + timestamp + " | " +scanCount);
+        scanWifi();
+    }
 
-        //todo write wifi information
-        File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-        File file = new File(dir,"exampleFile.txt");
-        try (FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.append(locationDataString + " | " + timestamp + " | " +scanCount);
-        }catch (IOException e){
-            //handle exception
-        }
+    public void scanWifi(){
+        registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+        wifiManager.startScan(); //Goes to onReceive
+        Toast.makeText(this, "Scanning Wifi from Logging", Toast.LENGTH_SHORT).show();
     }
 }
