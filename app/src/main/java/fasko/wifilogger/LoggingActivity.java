@@ -36,20 +36,19 @@ public class LoggingActivity extends AppCompatActivity {
         wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
-    //todo Implement multiple scans, come up with better file naming convention
     BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             unregisterReceiver(this);
             File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
             File file = new File(dir, "scan" +fileName+ ".txt");
-            while(totalScanCount > currentScanIteration){
+            if(totalScanCount > currentScanIteration){
                 try (FileWriter fileWriter = new FileWriter(file, true)) {
                     //If it's a blank file append the header to the top
                     if (file.length() == 0) {
                         fileWriter.append(fileHeader);
                     }
-                    fileWriter.append("\n---Scan" + ++currentScanIteration + "---");
+                    fileWriter.append("\n-----------Scan" + ++currentScanIteration + "-----------");
                     Comparator<ScanResult> comparator = new Comparator<ScanResult>() {
                         @Override
                         public int compare(ScanResult lhs, ScanResult rhs) {
@@ -67,9 +66,10 @@ public class LoggingActivity extends AppCompatActivity {
                     //handle exception
                 }
                 onClick(getWindow().getDecorView().getRootView());
+            }else {
+                currentScanIteration = 0;
+                totalScanCount = 0;
             }
-            currentScanIteration = 0;
-            totalScanCount =0;
         }
     };
 
