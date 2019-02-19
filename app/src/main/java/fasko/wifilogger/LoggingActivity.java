@@ -17,13 +17,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
 public class LoggingActivity extends AppCompatActivity {
     private WifiManager wifiManager;
-    private List<ScanResult> results;
-    static String fileHeader;
+    int currentScanIteration = 0;
+    int totalScanCount;
+    String fileHeader;
+    String fileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,29 +40,46 @@ public class LoggingActivity extends AppCompatActivity {
     BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            results = wifiManager.getScanResults();
             unregisterReceiver(this);
             File dir = getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
-            File file = new File(dir,"exampleFile" +fileHeader +".txt");
-            try (FileWriter fileWriter = new FileWriter(file)) {
-                fileWriter.append(fileHeader);
+            File file = new File(dir, "scan" +fileName+ ".txt");
+            while(totalScanCount > currentScanIteration){
+                try (FileWriter fileWriter = new FileWriter(file, true)) {
+                    //If it's a blank file append the header to the top
+                    if (file.length() == 0) {
+                        fileWriter.append(fileHeader);
+                    }
+                    fileWriter.append("\n---Scan" + ++currentScanIteration + "---");
+                    Comparator<ScanResult> comparator = new Comparator<ScanResult>() {
+                        @Override
+                        public int compare(ScanResult lhs, ScanResult rhs) {
+                            return (Integer.compare(rhs.level, lhs.level));
+                        }
+                    };
+                    List<ScanResult> results = wifiManager.getScanResults();
+                    Collections.sort(results, comparator);
 
-                for (ScanResult scanResult : results) {
-                    if (scanResult.SSID.equals("4csuuseonly"))
-                        fileWriter.append("\nSSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level);
+                    for (ScanResult scanResult : results) {
+                        if(scanResult.SSID.equals("4csuuseonly"))
+                            fileWriter.append("\nSSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level + "\n");
+                    }
+                } catch (IOException e) {
+                    //handle exception
                 }
-            }catch (IOException e){
-            //handle exception
+                onClick(getWindow().getDecorView().getRootView());
             }
+            currentScanIteration = 0;
+            totalScanCount =0;
         }
     };
 
     //Fetch logging details, scan, write to file
     //Internal Storage > Android > Data > fasko.wifilogger > files > Documents
-    public void onClick(View view) {
+    public void onClick(View view){
+
         EditText scanCountET = findViewById(R.id.ScanCountField);
-        int scanCount =  + Integer.parseInt(0 + scanCountET.getText().toString()); //Avoid string format issue when empty
-        if (scanCount <= 0){
+        totalScanCount =  + Integer.parseInt(0 + scanCountET.getText().toString()); //Avoid string format issue when empty
+        if (totalScanCount <= 0){
             Toast.makeText(this, "Scan Count must be greater than 0", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -109,15 +130,17 @@ public class LoggingActivity extends AppCompatActivity {
         } else if (testOrTrainingFlag){
             locationDataString = testOrTraining;
         }
+
         DateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         String timestamp = dateFormat.format(new Date(System.currentTimeMillis()));
-        fileHeader = (locationDataString + " | " + timestamp + " | " +scanCount);
+        fileHeader = (locationDataString + " | " + timestamp + " | " +totalScanCount);
+        fileName = locationDataString;
         scanWifi();
-    }
+        }
 
-    public void scanWifi(){
+    public void scanWifi()  {
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
         wifiManager.startScan(); //Goes to onReceive
-        Toast.makeText(this, "Scanning Wifi from Logging", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Scanning Wifi "+currentScanIteration + "/" +totalScanCount, Toast.LENGTH_SHORT).show();
     }
 }

@@ -14,13 +14,14 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private WifiManager wifiManager;
     private ListView listView;
-    private List<ScanResult> results;
     private ArrayList<String> arrayList = new ArrayList<>();
     private ArrayAdapter adapter;
 
@@ -55,10 +56,19 @@ public class MainActivity extends AppCompatActivity {
     BroadcastReceiver wifiReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            results = wifiManager.getScanResults();
             unregisterReceiver(this);
+            //Not all Android OSs returns an in order ScanResult, this sorts the list manually
+            Comparator<ScanResult> comparator = new Comparator<ScanResult>() {
+                @Override
+                public int compare(ScanResult lhs, ScanResult rhs) {
+                    return (Integer.compare(rhs.level, lhs.level));
+                }
+            };
+            List<ScanResult> results = wifiManager.getScanResults();
+            Collections.sort(results, comparator);
+
             for (ScanResult scanResult : results) {
-                if (scanResult.SSID.equals("4csuuseonly"))
+                if(scanResult.SSID.equals("4csuuseonly"))
                     arrayList.add("SSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level);
             }
             adapter.notifyDataSetChanged();
