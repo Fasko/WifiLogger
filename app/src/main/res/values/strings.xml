@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WifiLogger ver: 0.0.3</string>
+    <string name="app_name">WifiLogger 1.0.0</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_logging">Logging</string>
 </resources>
