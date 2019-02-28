@@ -48,7 +48,7 @@ public class LoggingActivity extends AppCompatActivity {
                     if (file.length() == 0) {
                         fileWriter.append(fileHeader);
                     }
-                    fileWriter.append("\n-----------Scan" + ++currentScanIteration + "-----------");
+                    fileWriter.append("\n$-------------SCAN" + ++currentScanIteration + "-------------$");
                     Comparator<ScanResult> comparator = new Comparator<ScanResult>() {
                         @Override
                         public int compare(ScanResult lhs, ScanResult rhs) {
@@ -60,7 +60,9 @@ public class LoggingActivity extends AppCompatActivity {
 
                     for (ScanResult scanResult : results) {
                         if(scanResult.SSID.equals("4csuuseonly"))
-                            fileWriter.append("\nSSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level + "\n");
+                            fileWriter.append("\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level + "\n");
+                        //fileWriter.append("\nSSID: " + scanResult.SSID + "\nBSSID: " + scanResult.BSSID + "\ndB: " + scanResult.level + "\n");
+
                     }
                 } catch (IOException e) {
                     //handle exception
@@ -69,6 +71,9 @@ public class LoggingActivity extends AppCompatActivity {
             }else {
                 currentScanIteration = 0;
                 totalScanCount = 0;
+                UploadToServer serverHandler = new UploadToServer(); //Have to create new Async or wont run
+                serverHandler.execute(fileName);
+                Toast.makeText(getApplicationContext(),"Done Scanning",Toast.LENGTH_SHORT).show();
             }
         }
     };
